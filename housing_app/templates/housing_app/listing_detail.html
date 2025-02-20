@@ -1,0 +1,64 @@
+{% extends 'housing_app/base.html' %}
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <!-- Card wrapper -->
+      <div class="card bg-dark text-white shadow">
+        <div class="card-body">
+          <h2 class="mb-4">Listing Details</h2>
+
+          <p><strong>Address:</strong> {{ listing.address }}</p>
+          <p><strong>Landlord Contact:</strong> {{ listing.landlord_contact }}</p>
+          <p><strong>Bedrooms:</strong> {{ listing.bedrooms }}</p>
+          <p><strong>Bathrooms:</strong> {{ listing.bathrooms }}</p>
+          <p><strong>Property Type:</strong> {{ listing.property_type }}</p>
+          <p>
+            <strong>Pets Allowed:</strong>
+            {% if listing.pets_allowed %}Yes{% else %}No{% endif %}
+          </p>
+          <p>
+            <strong>ADA Accessible:</strong>
+            {% if listing.ada_accessible %}Yes{% else %}No{% endif %}
+          </p>
+          <p><strong>Income Requirement:</strong> {{ listing.income_requirement }}</p>
+          <p>
+            <strong>Past Eviction Allowed:</strong>
+            {% if listing.past_eviction_allowed %}Yes{% else %}No{% endif %}
+          </p>
+          <p>
+            <strong>Sex Offender Allowed:</strong>
+            {% if listing.sex_offender_allowed %}Yes{% else %}No{% endif %}
+          </p>
+          <p>
+            <strong>Criminal Record Allowed:</strong>
+            {% if listing.criminal_record_allowed %}Yes{% else %}No{% endif %}
+          </p>
+          <p>
+            <strong>Issues Allowed:</strong>
+            {% if listing.issues_allowed %}Yes{% else %}No{% endif %}
+          </p>
+
+          {% if listing.additional_info %}
+            <p><strong>Additional Info:</strong> {{ listing.additional_info }}</p>
+          {% endif %}
+
+          {% if listing.image %}
+            <p><strong>Image:</strong></p>
+            <img
+              src="{{ listing.image.url }}"
+              alt="Property Image"
+              class="img-fluid mb-3"
+              style="max-width:100%;"
+            >
+          {% endif %}
+
+          <a href="{% url 'housing_app:listing_list' %}" class="btn btn-secondary">
+            Back to List
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'housing_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-4">
+      <!-- Card wrapper -->
+      <div class="card bg-dark text-white shadow">
+        <div class="card-body">
+          
+          <!-- Logo at top -->
+          <div class="text-center mb-4">
+            <!-- Point to your actual static image path here -->
+            <img 
+              src="{% static 'images/logo_main.avif' %}" 
+              alt="Hand Up Housing" 
+              style="max-width: 100%; height: 80px;"
+            />
+          </div>
+          
+          <h2 class="mb-4 text-center">Register</h2>
+          
+          <!-- Registration Form -->
+          <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <button type="submit" class="btn btn-primary w-100">
+              Sign Up
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

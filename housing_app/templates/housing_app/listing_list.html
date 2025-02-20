@@ -1,0 +1,195 @@
+{% extends 'housing_app/base.html' %}
+{% load static %}
+{% load group_tags %}
+
+{% block content %}
+<h2 class="mb-4">Available Listings</h2>
+
+<!-- SEARCH form -->
+<form method="GET" class="mb-3">
+  <div class="row gx-2 gy-2">
+    <div class="col">
+      <input
+        type="text"
+        name="search"
+        class="form-control"
+        placeholder="Search address/contact/notes..."
+        value="{{ request.GET.search|default_if_none:'' }}"
+      >
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </div>
+</form>
+
+<!-- FILTER form (bedrooms, bathrooms, property type, etc.) -->
+<form method="GET" class="mb-4">
+  <!-- Row 1: bedrooms, bathrooms, property_type -->
+  <div class="row gx-2 gy-2 mb-3">
+    <div class="col">
+      <label>Bedrooms (min):</label>
+      <input
+        type="number"
+        name="bedrooms"
+        class="form-control"
+        value="{{ request.GET.bedrooms|default_if_none:'' }}"
+      >
+    </div>
+    <div class="col">
+      <label>Bathrooms (min):</label>
+      <input
+        type="number"
+        name="bathrooms"
+        class="form-control"
+        value="{{ request.GET.bathrooms|default_if_none:'' }}"
+      >
+    </div>
+    <div class="col">
+      <label>Property Type:</label>
+      <select name="property_type" class="form-select">
+        <option value="">Any</option>
+        <option value="house" {% if request.GET.property_type == 'house' %}selected{% endif %}>House</option>
+        <option value="apartment" {% if request.GET.property_type == 'apartment' %}selected{% endif %}>Apartment</option>
+        <option value="condo" {% if request.GET.property_type == 'condo' %}selected{% endif %}>Condo</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Row 2: pets_allowed, ada_accessible, eviction_allowed -->
+  <div class="row gx-2 gy-2 mb-3">
+    <div class="col">
+      <label>Pets Allowed:</label>
+      <select name="pets_allowed" class="form-select">
+        <option value="">Any</option>
+        <option value="True" {% if request.GET.pets_allowed == 'True' %}selected{% endif %}>Yes</option>
+        <option value="False" {% if request.GET.pets_allowed == 'False' %}selected{% endif %}>No</option>
+      </select>
+    </div>
+    <div class="col">
+      <label>ADA Accessible:</label>
+      <select name="ada_accessible" class="form-select">
+        <option value="">Any</option>
+        <option value="True" {% if request.GET.ada_accessible == 'True' %}selected{% endif %}>Yes</option>
+        <option value="False" {% if request.GET.ada_accessible == 'False' %}selected{% endif %}>No</option>
+      </select>
+    </div>
+    <div class="col">
+      <label>Eviction Allowed:</label>
+      <select name="past_eviction_allowed" class="form-select">
+        <option value="">Any</option>
+        <option value="True" {% if request.GET.past_eviction_allowed == 'True' %}selected{% endif %}>Yes</option>
+        <option value="False" {% if request.GET.past_eviction_allowed == 'False' %}selected{% endif %}>No</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Row 3: sex_offender_allowed, criminal_record_allowed, issues_allowed -->
+  <div class="row gx-2 gy-2 mb-3">
+    <div class="col">
+      <label>Sex Offender Allowed:</label>
+      <select name="sex_offender_allowed" class="form-select">
+        <option value="">Any</option>
+        <option value="True" {% if request.GET.sex_offender_allowed == 'True' %}selected{% endif %}>Yes</option>
+        <option value="False" {% if request.GET.sex_offender_allowed == 'False' %}selected{% endif %}>No</option>
+      </select>
+    </div>
+    <div class="col">
+      <label>Criminal Record Allowed:</label>
+      <select name="criminal_record_allowed" class="form-select">
+        <option value="">Any</option>
+        <option value="True" {% if request.GET.criminal_record_allowed == 'True' %}selected{% endif %}>Yes</option>
+        <option value="False" {% if request.GET.criminal_record_allowed == 'False' %}selected{% endif %}>No</option>
+      </select>
+    </div>
+    <div class="col">
+      <label>Issues Allowed:</label>
+      <select name="issues_allowed" class="form-select">
+        <option value="">Any</option>
+        <option value="True" {% if request.GET.issues_allowed == 'True' %}selected{% endif %}>Yes</option>
+        <option value="False" {% if request.GET.issues_allowed == 'False' %}selected{% endif %}>No</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Row 4: Income Requirement -->
+  <div class="row gx-2 gy-2 mb-3">
+    <div class="col">
+      <label>Income Requirement:</label>
+      <input
+        type="text"
+        name="income_requirement"
+        class="form-control"
+        value="{{ request.GET.income_requirement|default_if_none:'' }}"
+      >
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<hr class="text-white">
+
+{% if user|has_group:"Volunteer" or user.is_superuser %}
+  <a class="btn btn-success mb-3" href="{% url 'housing_app:listing_create' %}">
+    Add New Listing
+  </a>
+{% endif %}
+
+<!-- Table of results (Bootstrap table dark) -->
+<table class="table table-dark table-bordered">
+  <thead>
+    <tr>
+      <th>Address</th>
+      <th>Type</th>
+      <th>Bedrooms</th>
+      <th>Bathrooms</th>
+      <th>Pets?</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for listing in listings %}
+      <tr>
+        <td>{{ listing.address }}</td>
+        <td>{{ listing.property_type }}</td>
+        <td>{{ listing.bedrooms }}</td>
+        <td>{{ listing.bathrooms }}</td>
+        <td>{% if listing.pets_allowed %}Yes{% else %}No{% endif %}</td>
+        <td>
+          <!-- Keep buttons on same line -->
+          <a 
+            href="{% url 'housing_app:listing_detail' listing.pk %}"
+            class="btn btn-info btn-sm me-1"
+          >
+            View
+          </a>
+          {% if user|has_group:"Volunteer" or user.is_superuser %}
+            <a
+              href="{% url 'housing_app:listing_update' listing.pk %}"
+              class="btn btn-warning btn-sm me-1"
+            >
+              Edit
+            </a>
+          {% endif %}
+          {% if user.is_superuser %}
+            <form
+              method="POST"
+              action="{% url 'housing_app:listing_delete' listing.pk %}"
+              class="d-inline-block"
+            >
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn-danger btn-sm"
+              >
+                Delete
+              </button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
