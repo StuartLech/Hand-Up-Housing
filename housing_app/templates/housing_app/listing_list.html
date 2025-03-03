@@ -116,7 +116,6 @@
         <option value="felony" {% if request.GET.criminal_record_allowed == 'felony' %}selected{% endif %}>Felony</option>
       </select>
     </div>
-    <!-- We removed "issues_allowed" filter because it no longer exists. If you want to filter by misc_notes text, you'd do a search. -->
   </div>
 
   <!-- Row 4: Income Requirement (choice) -->
@@ -133,7 +132,11 @@
     </div>
   </div>
 
+  <!-- Filter & Clear buttons -->
   <button type="submit" class="btn btn-primary">Filter</button>
+  
+  <!-- The “Clear” button simply links back with no query params -->
+  <a href="{% url 'housing_app:listing_list' %}" class="btn btn-secondary ms-2">Clear</a>
 </form>
 
 <hr class="text-white">
