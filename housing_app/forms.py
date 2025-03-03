@@ -1,5 +1,3 @@
-# housing_app/forms.py
-
 from django import forms
 from .models import Listing
 
@@ -7,8 +5,13 @@ class ListingForm(forms.ModelForm):
     class Meta:
         model = Listing
         fields = [
-            'address',
-            'landlord_contact',
+            'street',
+            'city',
+            'state',
+            'zip',
+            'landlord_cell',
+            'landlord_email',
+            'is_available',
             'bedrooms',
             'bathrooms',
             'property_type',
@@ -18,7 +21,9 @@ class ListingForm(forms.ModelForm):
             'past_eviction_allowed',
             'sex_offender_allowed',
             'criminal_record_allowed',
-            'issues_allowed',
-            'additional_info',
-            'image',
+            'additional_info',   # Kept as is
+            'misc_notes',        # Replaces issues_allowed
+            'image1',
+            'image2',
+            'image3',
         ]

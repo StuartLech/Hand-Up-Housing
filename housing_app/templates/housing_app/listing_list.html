@@ -5,8 +5,17 @@
 {% block content %}
 <h2 class="mb-4">Available Listings</h2>
 
+<!-- Toggle link to show/hide Occupied listings -->
+{% if request.GET.show_occupied == '1' %}
+  <a class="btn btn-secondary mb-3" href="?">Hide Occupied</a>
+{% else %}
+  <a class="btn btn-secondary mb-3" href="?show_occupied=1">Show Occupied</a>
+{% endif %}
+
 <!-- SEARCH form -->
 <form method="GET" class="mb-3">
+  <!-- Keep show_occupied if present -->
+  <input type="hidden" name="show_occupied" value="{{ request.GET.show_occupied|default_if_none:'' }}">
   <div class="row gx-2 gy-2">
     <div class="col">
       <input
@@ -23,8 +32,11 @@
   </div>
 </form>
 
-<!-- FILTER form (bedrooms, bathrooms, property type, etc.) -->
+<!-- FILTER form -->
 <form method="GET" class="mb-4">
+  <!-- Keep show_occupied param if present -->
+  <input type="hidden" name="show_occupied" value="{{ request.GET.show_occupied|default_if_none:'' }}">
+
   <!-- Row 1: bedrooms, bathrooms, property_type -->
   <div class="row gx-2 gy-2 mb-3">
     <div class="col">
@@ -52,6 +64,7 @@
         <option value="house" {% if request.GET.property_type == 'house' %}selected{% endif %}>House</option>
         <option value="apartment" {% if request.GET.property_type == 'apartment' %}selected{% endif %}>Apartment</option>
         <option value="condo" {% if request.GET.property_type == 'condo' %}selected{% endif %}>Condo</option>
+        <option value="group_home" {% if request.GET.property_type == 'group_home' %}selected{% endif %}>Group Home</option>
       </select>
     </div>
   </div>
@@ -84,7 +97,7 @@
     </div>
   </div>
 
-  <!-- Row 3: sex_offender_allowed, criminal_record_allowed, issues_allowed -->
+  <!-- Row 3: sex_offender_allowed, criminal_record_allowed -->
   <div class="row gx-2 gy-2 mb-3">
     <div class="col">
       <label>Sex Offender Allowed:</label>
@@ -95,33 +108,28 @@
       </select>
     </div>
     <div class="col">
-      <label>Criminal Record Allowed:</label>
+      <label>Criminal Record:</label>
       <select name="criminal_record_allowed" class="form-select">
         <option value="">Any</option>
-        <option value="True" {% if request.GET.criminal_record_allowed == 'True' %}selected{% endif %}>Yes</option>
-        <option value="False" {% if request.GET.criminal_record_allowed == 'False' %}selected{% endif %}>No</option>
+        <option value="none" {% if request.GET.criminal_record_allowed == 'none' %}selected{% endif %}>None</option>
+        <option value="misdemeanor" {% if request.GET.criminal_record_allowed == 'misdemeanor' %}selected{% endif %}>Misdemeanor</option>
+        <option value="felony" {% if request.GET.criminal_record_allowed == 'felony' %}selected{% endif %}>Felony</option>
       </select>
     </div>
-    <div class="col">
-      <label>Issues Allowed:</label>
-      <select name="issues_allowed" class="form-select">
-        <option value="">Any</option>
-        <option value="True" {% if request.GET.issues_allowed == 'True' %}selected{% endif %}>Yes</option>
-        <option value="False" {% if request.GET.issues_allowed == 'False' %}selected{% endif %}>No</option>
-      </select>
-    </div>
+    <!-- We removed "issues_allowed" filter because it no longer exists. If you want to filter by misc_notes text, you'd do a search. -->
   </div>
 
-  <!-- Row 4: Income Requirement -->
+  <!-- Row 4: Income Requirement (choice) -->
   <div class="row gx-2 gy-2 mb-3">
     <div class="col">
       <label>Income Requirement:</label>
-      <input
-        type="text"
-        name="income_requirement"
-        class="form-control"
-        value="{{ request.GET.income_requirement|default_if_none:'' }}"
-      >
+      <select name="income_requirement" class="form-select">
+        <option value="">Any</option>
+        <option value="under_20" {% if request.GET.income_requirement == 'under_20' %}selected{% endif %}>Under $20,000</option>
+        <option value="30_40" {% if request.GET.income_requirement == '30_40' %}selected{% endif %}>$30,000-$40,000</option>
+        <option value="40_50" {% if request.GET.income_requirement == '40_50' %}selected{% endif %}>$40,000-$50,000</option>
+        <option value="50_plus" {% if request.GET.income_requirement == '50_plus' %}selected{% endif %}>$50,000 and Above</option>
+      </select>
     </div>
   </div>
 
@@ -140,7 +148,10 @@
 <table class="table table-dark table-bordered">
   <thead>
     <tr>
-      <th>Address</th>
+      <th>Street</th>
+      <th>City</th>
+      <th>State</th>
+      <th>Zip</th>
       <th>Type</th>
       <th>Bedrooms</th>
       <th>Bathrooms</th>
@@ -151,13 +162,15 @@
   <tbody>
     {% for listing in listings %}
       <tr>
-        <td>{{ listing.address }}</td>
+        <td>{{ listing.street }}</td>
+        <td>{{ listing.city }}</td>
+        <td>{{ listing.state }}</td>
+        <td>{{ listing.zip }}</td>
         <td>{{ listing.property_type }}</td>
         <td>{{ listing.bedrooms }}</td>
         <td>{{ listing.bathrooms }}</td>
         <td>{% if listing.pets_allowed %}Yes{% else %}No{% endif %}</td>
         <td>
-          <!-- Keep buttons on same line -->
           <a 
             href="{% url 'housing_app:listing_detail' listing.pk %}"
             class="btn btn-info btn-sm me-1"

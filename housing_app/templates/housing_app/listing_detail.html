@@ -8,20 +8,32 @@
         <div class="card-body">
           <h2 class="mb-4">Listing Details</h2>
 
-          <p><strong>Address:</strong> {{ listing.address }}</p>
-          <p><strong>Landlord Contact:</strong> {{ listing.landlord_contact }}</p>
+          <p><strong>Street:</strong> {{ listing.street }}</p>
+          <p><strong>City:</strong> {{ listing.city }}</p>
+          <p><strong>State:</strong> {{ listing.state }}</p>
+          <p><strong>Zip:</strong> {{ listing.zip }}</p>
+
+          <p><strong>Landlord Cell:</strong> {{ listing.landlord_cell }}</p>
+          <p>
+            <strong>Landlord Email:</strong>
+            {% if listing.landlord_email %}
+              <a href="mailto:{{ listing.landlord_email }}">{{ listing.landlord_email }}</a>
+            {% else %}
+              N/A
+            {% endif %}
+          </p>
+
+          <p>
+            <strong>Availability:</strong>
+            {% if listing.is_available %}Available{% else %}Occupied{% endif %}
+          </p>
+
           <p><strong>Bedrooms:</strong> {{ listing.bedrooms }}</p>
           <p><strong>Bathrooms:</strong> {{ listing.bathrooms }}</p>
           <p><strong>Property Type:</strong> {{ listing.property_type }}</p>
-          <p>
-            <strong>Pets Allowed:</strong>
-            {% if listing.pets_allowed %}Yes{% else %}No{% endif %}
-          </p>
-          <p>
-            <strong>ADA Accessible:</strong>
-            {% if listing.ada_accessible %}Yes{% else %}No{% endif %}
-          </p>
-          <p><strong>Income Requirement:</strong> {{ listing.income_requirement }}</p>
+          <p><strong>Pets Allowed:</strong> {% if listing.pets_allowed %}Yes{% else %}No{% endif %}</p>
+          <p><strong>ADA Accessible:</strong> {% if listing.ada_accessible %}Yes{% else %}No{% endif %}</p>
+          <p><strong>Income Requirement:</strong> {{ listing.get_income_requirement_display }}</p>
           <p>
             <strong>Past Eviction Allowed:</strong>
             {% if listing.past_eviction_allowed %}Yes{% else %}No{% endif %}
@@ -32,22 +44,41 @@
           </p>
           <p>
             <strong>Criminal Record Allowed:</strong>
-            {% if listing.criminal_record_allowed %}Yes{% else %}No{% endif %}
-          </p>
-          <p>
-            <strong>Issues Allowed:</strong>
-            {% if listing.issues_allowed %}Yes{% else %}No{% endif %}
+            {{ listing.get_criminal_record_allowed_display }}
           </p>
 
           {% if listing.additional_info %}
             <p><strong>Additional Info:</strong> {{ listing.additional_info }}</p>
           {% endif %}
 
-          {% if listing.image %}
-            <p><strong>Image:</strong></p>
+          {% if listing.misc_notes %}
+            <p><strong>Misc Notes:</strong> {{ listing.misc_notes }}</p>
+          {% endif %}
+
+          <!-- Images (up to 3) -->
+          {% if listing.image1 %}
+            <p><strong>Image 1:</strong></p>
             <img
-              src="{{ listing.image.url }}"
-              alt="Property Image"
+              src="{{ listing.image1.url }}"
+              alt="Property Image 1"
+              class="img-fluid mb-3"
+              style="max-width:100%;"
+            >
+          {% endif %}
+          {% if listing.image2 %}
+            <p><strong>Image 2:</strong></p>
+            <img
+              src="{{ listing.image2.url }}"
+              alt="Property Image 2"
+              class="img-fluid mb-3"
+              style="max-width:100%;"
+            >
+          {% endif %}
+          {% if listing.image3 %}
+            <p><strong>Image 3:</strong></p>
+            <img
+              src="{{ listing.image3.url }}"
+              alt="Property Image 3"
               class="img-fluid mb-3"
               style="max-width:100%;"
             >

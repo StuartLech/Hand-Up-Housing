@@ -4,8 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from django.db.models import Q, IntegerField  # ADDED IntegerField import
-from django.db.models.functions import Cast   # ADDED Cast import
+from django.db.models import Q
 
 from .models import Listing
 from .forms import ListingForm
@@ -38,8 +37,8 @@ class CustomUserCreationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.first_name = self.cleaned_data["first_name"]
-        user.last_name = self.cleaned_data["last_name"]
-        user.email = self.cleaned_data["email"]
+        user.last_name  = self.cleaned_data["last_name"]
+        user.email      = self.cleaned_data["email"]
         if commit:
             user.save()
         return user
@@ -57,15 +56,26 @@ def register(request):
 @login_required
 @user_passes_test(is_approved)
 def listing_list(request):
+    """ Show all available listings by default; can show occupied if user requests. """
     qs = Listing.objects.all()
 
-    # 1) Search bar: substring across address, landlord_contact, additional_info
+    # If not set to "show_occupied=1", we filter out is_available=False (occupied)
+    show_occupied = request.GET.get('show_occupied', '0')
+    if show_occupied != '1':
+        qs = qs.filter(is_available=True)
+
+    # 1) Search bar (search across address fields, landlord info, additional_info, misc_notes)
     search = request.GET.get('search')
     if search:
         qs = qs.filter(
-            Q(address__icontains=search) |
-            Q(landlord_contact__icontains=search) |
-            Q(additional_info__icontains=search)
+            Q(street__icontains=search)  |
+            Q(city__icontains=search)    |
+            Q(state__icontains=search)   |
+            Q(zip__icontains=search)     |
+            Q(landlord_cell__icontains=search) |
+            Q(landlord_email__icontains=search) |
+            Q(additional_info__icontains=search) |
+            Q(misc_notes__icontains=search)
         )
 
     # 2) Filter: bedrooms (min)
@@ -78,53 +88,40 @@ def listing_list(request):
     if bathrooms:
         qs = qs.filter(bathrooms__gte=bathrooms)
 
-    # 4) Filter: property_type
+    # 4) property_type
     property_type = request.GET.get('property_type')
     if property_type:
         qs = qs.filter(property_type=property_type)
 
-    # 5) Filter: pets_allowed
+    # 5) pets_allowed
     pets_allowed = request.GET.get('pets_allowed')
     if pets_allowed in ['True', 'False']:
         qs = qs.filter(pets_allowed=(pets_allowed == 'True'))
 
-    # 6) Filter: ada_accessible
+    # 6) ada_accessible
     ada_accessible = request.GET.get('ada_accessible')
     if ada_accessible in ['True', 'False']:
         qs = qs.filter(ada_accessible=(ada_accessible == 'True'))
 
-    # 7) Filter: past_eviction_allowed
+    # 7) past_eviction_allowed
     past_eviction_allowed = request.GET.get('past_eviction_allowed')
     if past_eviction_allowed in ['True', 'False']:
         qs = qs.filter(past_eviction_allowed=(past_eviction_allowed == 'True'))
 
-    # 8) Filter: sex_offender_allowed
+    # 8) sex_offender_allowed
     sex_offender_allowed = request.GET.get('sex_offender_allowed')
     if sex_offender_allowed in ['True', 'False']:
         qs = qs.filter(sex_offender_allowed=(sex_offender_allowed == 'True'))
 
-    # 9) Filter: criminal_record_allowed
+    # 9) criminal_record_allowed
     criminal_record_allowed = request.GET.get('criminal_record_allowed')
-    if criminal_record_allowed in ['True', 'False']:
-        qs = qs.filter(criminal_record_allowed=(criminal_record_allowed == 'True'))
+    if criminal_record_allowed in ['none', 'misdemeanor', 'felony']:
+        qs = qs.filter(criminal_record_allowed=criminal_record_allowed)
 
-    # 10) Filter: issues_allowed
-    issues_allowed = request.GET.get('issues_allowed')
-    if issues_allowed in ['True', 'False']:
-        qs = qs.filter(issues_allowed=(issues_allowed == 'True'))
-
-    # 11) Filter: income_requirement -> less than or equal to user input (if numeric)
+    # 10) income_requirement
     inc_req = request.GET.get('income_requirement')
-    if inc_req:
-        try:
-            salary = int(inc_req)
-            # Cast the CharField to integer, then do LTE filter
-            qs = qs.annotate(
-                inc_int=Cast('income_requirement', IntegerField())
-            ).filter(inc_int__lte=salary)
-        except ValueError:
-            # If not numeric, do nothing (or we could fallback to substring match)
-            pass
+    if inc_req in ['under_20', '30_40', '40_50', '50_plus']:
+        qs = qs.filter(income_requirement=inc_req)
 
     return render(request, 'housing_app/listing_list.html', {'listings': qs})
 
@@ -138,7 +135,7 @@ def listing_detail(request, pk):
 @user_passes_test(is_volunteer)
 def listing_create(request):
     if request.method == 'POST':
-        form = ListingForm(request.POST, request.FILES)  # request.FILES if images
+        form = ListingForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('housing_app:listing_list')
@@ -167,4 +164,3 @@ def listing_delete(request, pk):
         listing.delete()
         return redirect('housing_app:listing_list')
     return render(request, 'housing_app/listing_detail.html', {'listing': listing})
-
