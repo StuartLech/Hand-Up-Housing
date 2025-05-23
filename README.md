@@ -1,1 +1,1 @@
-Refer to Documentation folder for local developement.
+Refer to Documentation folder for local development.
