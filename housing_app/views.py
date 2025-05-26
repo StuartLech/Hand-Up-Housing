@@ -5,6 +5,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 from django.db.models import Q
+from django.http import JsonResponse, HttpResponseNotAllowed
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 from .models import Listing
 from .forms import ListingForm
@@ -164,3 +167,70 @@ def listing_delete(request, pk):
         listing.delete()
         return redirect('housing_app:listing_list')
     return render(request, 'housing_app/listing_detail.html', {'listing': listing})
+
+# ---------------------- API Views for React Frontend ----------------------
+
+def listing_to_dict(listing):
+    """Serialize a Listing instance into a Python dict."""
+    return {
+        'id': listing.id,
+        'street': listing.street,
+        'city': listing.city,
+        'state': listing.state,
+        'zip': listing.zip,
+        'landlord_cell': listing.landlord_cell,
+        'landlord_email': listing.landlord_email,
+        'is_available': listing.is_available,
+        'bedrooms': listing.bedrooms,
+        'bathrooms': listing.bathrooms,
+        'property_type': listing.property_type,
+        'pets_allowed': listing.pets_allowed,
+        'ada_accessible': listing.ada_accessible,
+        'income_requirement': listing.income_requirement,
+        'past_eviction_allowed': listing.past_eviction_allowed,
+        'sex_offender_allowed': listing.sex_offender_allowed,
+        'criminal_record_allowed': listing.criminal_record_allowed,
+        'additional_info': listing.additional_info,
+        'misc_notes': listing.misc_notes,
+        'image1': listing.image1.url if listing.image1 else None,
+        'image2': listing.image2.url if listing.image2 else None,
+        'image3': listing.image3.url if listing.image3 else None,
+    }
+
+@csrf_exempt
+def api_listings(request):
+    """GET returns all listings; POST creates a new listing."""
+    if request.method == 'GET':
+        qs = Listing.objects.all()
+        data = [listing_to_dict(l) for l in qs]
+        return JsonResponse(data, safe=False)
+    if request.method == 'POST':
+        payload = json.loads(request.body or '{}')
+        form = ListingForm(payload)
+        if form.is_valid():
+            listing = form.save()
+            return JsonResponse(listing_to_dict(listing), status=201)
+        return JsonResponse({'errors': form.errors}, status=400)
+    return HttpResponseNotAllowed(['GET', 'POST'])
+
+@csrf_exempt
+def api_listing_detail(request, pk):
+    """GET, PUT and DELETE operations for a single listing."""
+    listing = get_object_or_404(Listing, pk=pk)
+    if request.method == 'GET':
+        return JsonResponse(listing_to_dict(listing))
+    if request.method == 'PUT':
+        payload = json.loads(request.body or '{}')
+        form = ListingForm(payload, instance=listing)
+        if form.is_valid():
+            listing = form.save()
+            return JsonResponse(listing_to_dict(listing))
+        return JsonResponse({'errors': form.errors}, status=400)
+    if request.method == 'DELETE':
+        listing.delete()
+        return JsonResponse({'deleted': True})
+    return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
+
+def react_index(request):
+    """Serve the React front-end entry point."""
+    return render(request, 'housing_app/react_index.html')
