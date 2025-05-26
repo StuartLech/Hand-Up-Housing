@@ -32,7 +32,16 @@ simple JSON API served from the Django backend.
    ```
 
 The React interface requires no build step and is loaded directly from static
-files.
+files located in the `static/` directory. During development Django locates
+them automatically via the `STATICFILES_DIRS` setting. Before deployment make
+sure to collect the files with:
+```bash
+python manage.py collectstatic
+```
+
+The React front end is available at `/react/` while the development server is
+running. Access `http://127.0.0.1:8000/react/` in your browser and verify that
+the page loads without any 404 errors.
 
 The application will be available at `http://127.0.0.1:8000/` by default.
 
