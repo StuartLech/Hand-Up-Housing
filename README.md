@@ -36,6 +36,16 @@ files.
 
 The application will be available at `http://127.0.0.1:8000/` by default.
 
+## Deployment
+
+Before deploying to production, collect static assets with:
+
+```bash
+python manage.py collectstatic
+```
+
+The files will be placed in the `staticfiles/` directory.
+
 ## Documentation
 
 Additional PDFs are available in the `Documentation/` folder:
