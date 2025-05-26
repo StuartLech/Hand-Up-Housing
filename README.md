@@ -15,10 +15,10 @@ simple JSON API served from the Django backend.
 
 1. Create and activate a virtual environment:
    ```bash
-rm -rf venv
-python3.12 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+   rm -rf venv
+   python3.12 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
    ```
 2. Install dependencies:
    ```bash
