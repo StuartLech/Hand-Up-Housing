@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,9 +7,12 @@
 </head>
 <body class="bg-dark text-light">
   <div id="root"></div>
+
   <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <!-- note: no extra spaces around the tag -->
   <script type="text/babel" src="{% static 'js/react-app.js' %}"></script>
 </body>
 </html>

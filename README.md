@@ -15,11 +15,14 @@ simple JSON API served from the Django backend.
 
 1. Create and activate a virtual environment:
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate
+rm -rf venv
+python3.12 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
    ```
 2. Install dependencies:
    ```bash
+   pip install --upgrade pip setuptools wheel
    pip install -r requirements.txt
    ```
 3. Apply migrations and start the development server:
