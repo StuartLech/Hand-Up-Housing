@@ -10,4 +10,9 @@ urlpatterns = [
     path('listing/<int:pk>/update/', views.listing_update, name='listing_update'),
     path('listing/<int:pk>/delete/', views.listing_delete, name='listing_delete'),
     path('register/', views.register, name='register'),
+    # React front-end entry
+    path('react/', views.react_index, name='react_index'),
+    # Simple JSON API
+    path('api/listings/', views.api_listings, name='api_listings'),
+    path('api/listings/<int:pk>/', views.api_listing_detail, name='api_listing_detail'),
 ]
