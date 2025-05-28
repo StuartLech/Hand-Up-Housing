@@ -10,6 +10,10 @@
           <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
+            {{ formset.management_form }}
+            {% for f in formset %}
+              {{ f.as_p }}
+            {% endfor %}
             <button type="submit" class="btn btn-primary">Update</button>
             <a href="{% url 'housing_app:listing_list' %}" class="btn btn-secondary ms-2">Cancel</a>
           </form>

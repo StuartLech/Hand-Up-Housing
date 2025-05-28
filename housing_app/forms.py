@@ -1,5 +1,6 @@
 from django import forms
-from .models import Listing
+from django.forms import inlineformset_factory
+from .models import Listing, ListingImage
 
 class ListingForm(forms.ModelForm):
     class Meta:
@@ -23,7 +24,14 @@ class ListingForm(forms.ModelForm):
             'criminal_record_allowed',
             'additional_info',   # Kept as is
             'misc_notes',        # Replaces issues_allowed
-            'image1',
-            'image2',
-            'image3',
         ]
+
+# Up to 50 images per listing
+ListingImageFormSet = inlineformset_factory(
+    Listing,
+    ListingImage,
+    fields=['image'],
+    extra=1,
+    can_delete=True,
+    max_num=50,
+)

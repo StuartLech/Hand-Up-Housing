@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 from .models import Listing
-from .forms import ListingForm
+from .forms import ListingForm, ListingImageFormSet
 
 def is_volunteer(user):
     return user.groups.filter(name='Volunteer').exists() or user.is_superuser
@@ -138,26 +138,34 @@ def listing_detail(request, pk):
 @user_passes_test(is_volunteer)
 def listing_create(request):
     if request.method == 'POST':
-        form = ListingForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
+        form = ListingForm(request.POST)
+        formset = ListingImageFormSet(request.POST, request.FILES)
+        if form.is_valid() and formset.is_valid():
+            listing = form.save()
+            formset.instance = listing
+            formset.save()
             return redirect('housing_app:listing_list')
     else:
         form = ListingForm()
-    return render(request, 'housing_app/listing_create.html', {'form': form})
+        formset = ListingImageFormSet()
+    return render(request, 'housing_app/listing_create.html', {'form': form, 'formset': formset})
 
 @login_required
 @user_passes_test(is_volunteer)
 def listing_update(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
     if request.method == 'POST':
-        form = ListingForm(request.POST, request.FILES, instance=listing)
-        if form.is_valid():
-            form.save()
+        form = ListingForm(request.POST, instance=listing)
+        formset = ListingImageFormSet(request.POST, request.FILES, instance=listing)
+        if form.is_valid() and formset.is_valid():
+            listing = form.save()
+            formset.instance = listing
+            formset.save()
             return redirect('housing_app:listing_detail', pk=pk)
     else:
         form = ListingForm(instance=listing)
-    return render(request, 'housing_app/listing_update.html', {'form': form})
+        formset = ListingImageFormSet(instance=listing)
+    return render(request, 'housing_app/listing_update.html', {'form': form, 'formset': formset})
 
 @login_required
 @user_passes_test(is_admin)
@@ -192,9 +200,7 @@ def listing_to_dict(listing):
         'criminal_record_allowed': listing.criminal_record_allowed,
         'additional_info': listing.additional_info,
         'misc_notes': listing.misc_notes,
-        'image1': listing.image1.url if listing.image1 else None,
-        'image2': listing.image2.url if listing.image2 else None,
-        'image3': listing.image3.url if listing.image3 else None,
+        'images': [img.image.url for img in listing.images.all()],
     }
 
 @csrf_exempt

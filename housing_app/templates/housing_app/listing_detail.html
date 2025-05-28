@@ -55,34 +55,18 @@
             <p><strong>Misc Notes:</strong> {{ listing.misc_notes }}</p>
           {% endif %}
 
-          <!-- Images (up to 3) -->
-          {% if listing.image1 %}
-            <p><strong>Image 1:</strong></p>
+          <!-- Images -->
+          {% for img in listing.images.all %}
+            <p><strong>Image {{ forloop.counter }}:</strong></p>
             <img
-              src="{{ listing.image1.url }}"
-              alt="Property Image 1"
+              src="{{ img.image.url }}"
+              alt="Property Image {{ forloop.counter }}"
               class="img-fluid mb-3"
               style="max-width:100%;"
             >
-          {% endif %}
-          {% if listing.image2 %}
-            <p><strong>Image 2:</strong></p>
-            <img
-              src="{{ listing.image2.url }}"
-              alt="Property Image 2"
-              class="img-fluid mb-3"
-              style="max-width:100%;"
-            >
-          {% endif %}
-          {% if listing.image3 %}
-            <p><strong>Image 3:</strong></p>
-            <img
-              src="{{ listing.image3.url }}"
-              alt="Property Image 3"
-              class="img-fluid mb-3"
-              style="max-width:100%;"
-            >
-          {% endif %}
+          {% empty %}
+            <p>No images.</p>
+          {% endfor %}
 
           <a href="{% url 'housing_app:listing_list' %}" class="btn btn-secondary">
             Back to List
