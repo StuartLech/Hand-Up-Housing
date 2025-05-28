@@ -70,13 +70,19 @@ class Listing(models.Model):
     # NEW: replace "issues_allowed" (bool) with "misc_notes" (text)
     misc_notes = models.TextField(blank=True, null=True)
 
-    # Multiple images
-    image1 = models.ImageField(upload_to='property_images/', blank=True, null=True)
-    image2 = models.ImageField(upload_to='property_images/', blank=True, null=True)
-    image3 = models.ImageField(upload_to='property_images/', blank=True, null=True)
+    # Images are stored in a related model
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.street or ''} {self.city or ''}, {self.state or ''} {self.zip or ''}"
+
+
+class ListingImage(models.Model):
+    """Individual images for a Listing."""
+    listing = models.ForeignKey(Listing, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='property_images/')
+
+    def __str__(self):
+        return f"Image for Listing {self.listing_id}"
