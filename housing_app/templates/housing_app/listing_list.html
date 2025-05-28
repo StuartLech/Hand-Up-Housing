@@ -7,9 +7,9 @@
 
 <!-- Toggle link to show/hide Occupied listings -->
 {% if request.GET.show_occupied == '1' %}
-  <a class="btn btn-secondary mb-3" href="?">Hide Occupied</a>
+  <a class="btn btn-outline-light btn-sm mb-3" href="?">Hide Occupied</a>
 {% else %}
-  <a class="btn btn-secondary mb-3" href="?show_occupied=1">Show Occupied</a>
+  <a class="btn btn-outline-light btn-sm mb-3" href="?show_occupied=1">Show Occupied</a>
 {% endif %}
 
 <!-- SEARCH form -->
@@ -27,7 +27,7 @@
       >
     </div>
     <div class="col-auto">
-      <button type="submit" class="btn btn-primary">Search</button>
+      <button type="submit" class="btn btn-outline-light btn-sm">Search</button>
     </div>
   </div>
 </form>
@@ -133,16 +133,16 @@
   </div>
 
   <!-- Filter & Clear buttons -->
-  <button type="submit" class="btn btn-primary">Filter</button>
+  <button type="submit" class="btn btn-outline-light btn-sm">Filter</button>
   
   <!-- The “Clear” button simply links back with no query params -->
-  <a href="{% url 'housing_app:listing_list' %}" class="btn btn-secondary ms-2">Clear</a>
+  <a href="{% url 'housing_app:listing_list' %}" class="btn btn-outline-light btn-sm ms-2">Clear</a>
 </form>
 
 <hr class="text-white">
 
 {% if user|has_group:"Volunteer" or user.is_superuser %}
-  <a class="btn btn-success mb-3" href="{% url 'housing_app:listing_create' %}">
+  <a class="btn btn-outline-light btn-sm mb-3" href="{% url 'housing_app:listing_create' %}">
     Add New Listing
   </a>
 {% endif %}
@@ -174,16 +174,16 @@
         <td>{{ listing.bathrooms }}</td>
         <td>{% if listing.pets_allowed %}Yes{% else %}No{% endif %}</td>
         <td>
-          <a 
+          <a
             href="{% url 'housing_app:listing_detail' listing.pk %}"
-            class="btn btn-info btn-sm me-1"
+            class="btn btn-outline-light btn-sm me-1"
           >
             View
           </a>
           {% if user|has_group:"Volunteer" or user.is_superuser %}
             <a
               href="{% url 'housing_app:listing_update' listing.pk %}"
-              class="btn btn-warning btn-sm me-1"
+              class="btn btn-outline-light btn-sm me-1"
             >
               Edit
             </a>
@@ -197,7 +197,7 @@
               {% csrf_token %}
               <button
                 type="submit"
-                class="btn btn-danger btn-sm"
+                class="btn btn-outline-light btn-sm"
               >
                 Delete
               </button>

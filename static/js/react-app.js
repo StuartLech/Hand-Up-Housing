@@ -64,7 +64,7 @@ function ListingForm({ listing, onSuccess }) {
           <label className="form-check-label ms-2">Available</label>
         </div>
       </div>
-      <button className="btn btn-primary mt-3" type="submit">Save</button>
+      <button className="btn btn-outline-light btn-sm mt-3" type="submit">Save</button>
     </form>
   );
 }
@@ -98,7 +98,7 @@ function App() {
   if (view === 'form') {
     return (
       <div className="container mt-4">
-        <button className="btn btn-secondary mb-3" onClick={() => { setView('list'); setCurrent(null); }}>Back</button>
+        <button className="btn btn-outline-light btn-sm mb-3" onClick={() => { setView('list'); setCurrent(null); }}>Back</button>
         <ListingForm listing={current} onSuccess={() => { setView('list'); loadListings(); }} />
       </div>
     );
@@ -107,13 +107,13 @@ function App() {
   if (view === 'detail' && current) {
     return (
       <div className="container mt-4">
-        <button className="btn btn-secondary mb-3" onClick={() => setView('list')}>Back</button>
+        <button className="btn btn-outline-light btn-sm mb-3" onClick={() => setView('list')}>Back</button>
         <h3>{current.street}</h3>
         <p>{current.city}, {current.state} {current.zip}</p>
         <p>Bedrooms: {current.bedrooms}</p>
         <p>Bathrooms: {current.bathrooms}</p>
-        <button className="btn btn-primary me-2" onClick={() => { setView('form'); }}>Edit</button>
-        <button className="btn btn-danger" onClick={() => { deleteListing(current.id); setView('list'); }}>Delete</button>
+        <button className="btn btn-outline-light btn-sm me-2" onClick={() => { setView('form'); }}>Edit</button>
+        <button className="btn btn-outline-light btn-sm" onClick={() => { deleteListing(current.id); setView('list'); }}>Delete</button>
       </div>
     );
   }
@@ -122,7 +122,7 @@ function App() {
     <div className="container mt-4">
       <div className="d-flex justify-content-between mb-3">
         <h2>Listings</h2>
-        <button className="btn btn-success" onClick={() => setView('form')}>Add</button>
+        <button className="btn btn-outline-light btn-sm" onClick={() => setView('form')}>Add</button>
       </div>
       <table className="table table-dark table-bordered">
         <thead>
@@ -142,9 +142,9 @@ function App() {
               <td>{l.state}</td>
               <td>{l.zip}</td>
               <td>
-                <button className="btn btn-info btn-sm me-2" onClick={() => showDetail(l.id)}>View</button>
-                <button className="btn btn-warning btn-sm me-2" onClick={() => { setCurrent(l); setView('form'); }}>Edit</button>
-                <button className="btn btn-danger btn-sm" onClick={() => deleteListing(l.id)}>Delete</button>
+                <button className="btn btn-outline-light btn-sm me-2" onClick={() => showDetail(l.id)}>View</button>
+                <button className="btn btn-outline-light btn-sm me-2" onClick={() => { setCurrent(l); setView('form'); }}>Edit</button>
+                <button className="btn btn-outline-light btn-sm" onClick={() => deleteListing(l.id)}>Delete</button>
               </td>
             </tr>
           ))}
