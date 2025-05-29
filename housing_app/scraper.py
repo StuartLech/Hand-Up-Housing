@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from .models import Listing
+import json
 
 # Example IHDA rent caps by bedroom count (placeholder values)
 IHDA_RENT_CAPS = {
@@ -78,4 +79,51 @@ def scrape_urls(urls):
                 else:
                     messages.append(f'Listing already exists: {listing}')
     messages.append('Scraping complete.')
+    return messages
+
+
+def scrape_api(api_url, api_key=None):
+    """Fetch listing data from an API endpoint and create listings."""
+    messages = []
+    headers = {}
+    if api_key:
+        headers['Authorization'] = f'Bearer {api_key}'
+    try:
+        resp = requests.get(api_url, headers=headers, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as exc:
+        messages.append(f'Failed to fetch {api_url}: {exc}')
+        return messages
+
+    if not isinstance(data, list):
+        messages.append('API did not return a list of listings.')
+        return messages
+
+    for item in data:
+        try:
+            listing_data = {
+                'street': item.get('street'),
+                'city': item.get('city'),
+                'state': item.get('state'),
+                'zip': item.get('zip'),
+                'bedrooms': int(item.get('bedrooms', 0)),
+                'bathrooms': int(item.get('bathrooms', 1)),
+                'property_type': str(item.get('property_type', 'house')).lower(),
+                'lease_term': int(item.get('lease_term', 0)),
+                'hud_subsidy': str(item.get('hud_subsidy', '')).lower(),
+                'rent': int(item.get('rent', 0)),
+            }
+        except Exception:
+            continue
+
+        if passes_requirements(listing_data):
+            created, listing = create_listing(listing_data)
+            if created:
+                messages.append(f'Created listing at {listing}')
+            else:
+                messages.append(f'Listing already exists: {listing}')
+
+    if not messages:
+        messages.append('No eligible listings found.')
     return messages
