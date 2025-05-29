@@ -54,6 +54,13 @@ API key. The response should be a JSON array of listing objects with fields like
 `lease_term`, `hud_subsidy` and `rent`. Listings that meet the Madison County
 requirements will be created automatically.
 
+For quick testing the repository includes `static/sample_listings.json` which
+contains two example listings. When the Django development server is running
+with `DEBUG=True`, this file is available at
+`http://127.0.0.1:8000/static/sample_listings.json`. Supplying this URL to
+`/scrape/api/` demonstrates the import functionality without relying on an
+external service.
+
 ## Deployment
 
 Before deploying to production, collect static assets with:
