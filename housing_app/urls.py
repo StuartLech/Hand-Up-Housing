@@ -9,6 +9,7 @@ urlpatterns = [
     path('listing/create/', views.listing_create, name='listing_create'),
     path('listing/<int:pk>/update/', views.listing_update, name='listing_update'),
     path('listing/<int:pk>/delete/', views.listing_delete, name='listing_delete'),
+    path('scrape/', views.scrape_listings_view, name='scrape_listings'),
     path('register/', views.register, name='register'),
     # React front-end entry
     path('react/', views.react_index, name='react_index'),

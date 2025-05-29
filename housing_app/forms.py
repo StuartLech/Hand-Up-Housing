@@ -35,3 +35,11 @@ ListingImageFormSet = inlineformset_factory(
     can_delete=True,
     max_num=50,
 )
+
+# Simple form to trigger scraping from one or more URLs
+class ScrapeURLForm(forms.Form):
+    urls = forms.CharField(
+        label="Listing URLs",
+        widget=forms.Textarea(attrs={"rows": 3}),
+        help_text="Enter one URL per line",
+    )
