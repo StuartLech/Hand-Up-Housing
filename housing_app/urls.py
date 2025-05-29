@@ -12,9 +12,4 @@ urlpatterns = [
     path('scrape/', views.scrape_listings_view, name='scrape_listings'),
     path('scrape/api/', views.scrape_api_view, name='scrape_api'),
     path('register/', views.register, name='register'),
-    # React front-end entry
-    path('react/', views.react_index, name='react_index'),
-    # Simple JSON API
-    path('api/listings/', views.api_listings, name='api_listings'),
-    path('api/listings/<int:pk>/', views.api_listing_detail, name='api_listing_detail'),
 ]
