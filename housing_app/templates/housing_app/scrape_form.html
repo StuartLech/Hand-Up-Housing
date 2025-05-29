@@ -1,0 +1,18 @@
+{% extends 'housing_app/base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Scrape Listings</h2>
+<form method="post" class="mb-3">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Scrape</button>
+</form>
+
+{% if messages %}
+  <ul>
+    {% for msg in messages %}
+      <li>{{ msg }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

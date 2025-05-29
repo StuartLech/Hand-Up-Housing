@@ -35,3 +35,21 @@ ListingImageFormSet = inlineformset_factory(
     can_delete=True,
     max_num=50,
 )
+
+
+class ScrapeURLForm(forms.Form):
+    """Accept one or more URLs to scrape."""
+    urls = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 3}),
+        help_text="Enter one URL per line",
+        label="Listing URLs",
+    )
+
+    def clean_urls(self):
+        raw = self.cleaned_data.get("urls", "")
+        lines = [line.strip() for line in raw.splitlines() if line.strip()]
+        validator = forms.URLField().clean
+        cleaned = []
+        for line in lines:
+            cleaned.append(validator(line))
+        return cleaned
