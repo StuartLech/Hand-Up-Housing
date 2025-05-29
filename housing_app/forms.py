@@ -43,3 +43,8 @@ class ScrapeURLForm(forms.Form):
         widget=forms.Textarea(attrs={"rows": 3}),
         help_text="Enter one URL per line",
     )
+
+# Form for scraping from an external API endpoint
+class ScrapeAPIForm(forms.Form):
+    api_url = forms.URLField(label="API Endpoint")
+    api_key = forms.CharField(label="API Key", required=False)

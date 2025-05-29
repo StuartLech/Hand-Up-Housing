@@ -10,8 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 from .models import Listing
-from .forms import ListingForm, ListingImageFormSet, ScrapeURLForm
-from .scraper import scrape_urls
+from .forms import ListingForm, ListingImageFormSet, ScrapeURLForm, ScrapeAPIForm
+from .scraper import scrape_urls, scrape_api
 
 def is_volunteer(user):
     return user.groups.filter(name='Volunteer').exists() or user.is_superuser
@@ -191,6 +191,25 @@ def scrape_listings_view(request):
     else:
         form = ScrapeURLForm()
     return render(request, 'housing_app/scrape_listings.html', {
+        'form': form,
+        'results': results,
+    })
+
+
+@login_required
+@user_passes_test(is_volunteer)
+def scrape_api_view(request):
+    """Allow volunteers to import listings from an API endpoint."""
+    results = None
+    if request.method == 'POST':
+        form = ScrapeAPIForm(request.POST)
+        if form.is_valid():
+            api_url = form.cleaned_data['api_url']
+            api_key = form.cleaned_data.get('api_key')
+            results = scrape_api(api_url, api_key)
+    else:
+        form = ScrapeAPIForm()
+    return render(request, 'housing_app/scrape_api.html', {
         'form': form,
         'results': results,
     })

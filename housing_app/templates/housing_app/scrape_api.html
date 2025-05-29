@@ -1,0 +1,28 @@
+{% extends 'housing_app/base.html' %}
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card bg-dark text-white shadow">
+        <div class="card-body">
+          <h2 class="mb-4">Import Listings from API</h2>
+          <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-outline-light btn-sm">Fetch</button>
+            <a href="{% url 'housing_app:listing_list' %}" class="btn btn-outline-light btn-sm ms-2">Back</a>
+          </form>
+          {% if results %}
+            <hr class="text-white">
+            <ul class="mb-0">
+              {% for r in results %}
+                <li>{{ r }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
