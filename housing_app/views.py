@@ -10,7 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 from .models import Listing
-from .forms import ListingForm, ListingImageFormSet
+from .forms import ListingForm, ListingImageFormSet, ScrapeURLForm
+from .scraper import scrape_urls
 
 def is_volunteer(user):
     return user.groups.filter(name='Volunteer').exists() or user.is_superuser
@@ -175,6 +176,24 @@ def listing_delete(request, pk):
         listing.delete()
         return redirect('housing_app:listing_list')
     return render(request, 'housing_app/listing_detail.html', {'listing': listing})
+
+
+@login_required
+@user_passes_test(is_volunteer)
+def scrape_listings_view(request):
+    """Allow volunteers to scrape listings by providing URLs."""
+    results = None
+    if request.method == 'POST':
+        form = ScrapeURLForm(request.POST)
+        if form.is_valid():
+            urls = [u.strip() for u in form.cleaned_data['urls'].splitlines() if u.strip()]
+            results = scrape_urls(urls)
+    else:
+        form = ScrapeURLForm()
+    return render(request, 'housing_app/scrape_listings.html', {
+        'form': form,
+        'results': results,
+    })
 
 # ---------------------- API Views for React Frontend ----------------------
 
