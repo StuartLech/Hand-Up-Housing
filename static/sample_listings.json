@@ -1,0 +1,26 @@
+[
+  {
+    "street": "123 Maple Ave",
+    "city": "Decatur",
+    "state": "IL",
+    "zip": "62521",
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "property_type": "apartment",
+    "lease_term": 12,
+    "hud_subsidy": "none",
+    "rent": 1100
+  },
+  {
+    "street": "45 Oak Street",
+    "city": "Decatur",
+    "state": "IL",
+    "zip": "62522",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "property_type": "house",
+    "lease_term": 12,
+    "hud_subsidy": "none",
+    "rent": 1500
+  }
+]
