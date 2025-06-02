@@ -141,7 +141,7 @@
 
 <hr class="text-white">
 
-{% if user|has_group:"Volunteer" or user.is_superuser %}
+{% if user|has_group:"Manager" or user.is_superuser %}
   <a class="btn btn-outline-light btn-sm mb-3" href="{% url 'housing_app:listing_create' %}">
     Add New Listing
   </a>
@@ -165,6 +165,7 @@
       <th>Bedrooms</th>
       <th>Bathrooms</th>
       <th>Pets?</th>
+      <th>Image</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -180,13 +181,20 @@
         <td>{{ listing.bathrooms }}</td>
         <td>{% if listing.pets_allowed %}Yes{% else %}No{% endif %}</td>
         <td>
+          {% with listing.images.first as img %}
+            {% if img %}
+              <img src="{{ img.image.url }}" class="img-thumbnail" style="max-width: 100px;">
+            {% endif %}
+          {% endwith %}
+        </td>
+        <td>
           <a
             href="{% url 'housing_app:listing_detail' listing.pk %}"
             class="btn btn-outline-light btn-sm me-1"
           >
             View
           </a>
-          {% if user|has_group:"Volunteer" or user.is_superuser %}
+          {% if user|has_group:"Manager" or user.is_superuser %}
             <a
               href="{% url 'housing_app:listing_update' listing.pk %}"
               class="btn btn-outline-light btn-sm me-1"

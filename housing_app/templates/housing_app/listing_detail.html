@@ -55,18 +55,58 @@
             <p><strong>Misc Notes:</strong> {{ listing.misc_notes }}</p>
           {% endif %}
 
-          <!-- Images -->
-          {% for img in listing.images.all %}
-            <p><strong>Image {{ forloop.counter }}:</strong></p>
-            <img
-              src="{{ img.image.url }}"
-              alt="Property Image {{ forloop.counter }}"
-              class="img-fluid mb-3"
-              style="max-width:100%;"
-            >
-          {% empty %}
+          <!-- Map integration -->
+          {% if listing.street or listing.city or listing.state %}
+            <div class="mb-4">
+              <iframe
+                width="100%"
+                height="300"
+                style="border:0"
+                loading="lazy"
+                allowfullscreen
+                src="https://www.google.com/maps?q={{ listing.street|urlencode }}+{{ listing.city|urlencode }}+{{ listing.state|urlencode }}+{{ listing.zip|urlencode }}&amp;output=embed"
+              ></iframe>
+            </div>
+          {% endif %}
+
+          <!-- Responsive image gallery -->
+          {% if listing.images.all %}
+            <div id="listingCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                {% for img in listing.images.all %}
+                  <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img
+                      src="{{ img.image.url }}"
+                      class="d-block w-100"
+                      alt="Property Image {{ forloop.counter }}"
+                    >
+                  </div>
+                {% endfor %}
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#listingCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#listingCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+
+            <div class="d-flex flex-wrap mb-4">
+              {% for img in listing.images.all %}
+                <img
+                  src="{{ img.image.url }}"
+                  class="img-thumbnail m-1"
+                  style="width: 100px; cursor: pointer;"
+                  data-bs-target="#listingCarousel"
+                  data-bs-slide-to="{{ forloop.counter0 }}"
+                >
+              {% endfor %}
+            </div>
+          {% else %}
             <p>No images.</p>
-          {% endfor %}
+          {% endif %}
 
           <a href="{% url 'housing_app:listing_list' %}" class="btn btn-outline-light btn-sm">
             Back to List

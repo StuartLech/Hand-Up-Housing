@@ -4,12 +4,13 @@ from django import template
 
 register = template.Library()
 
-@register.filter(name='has_group')
+
+@register.filter(name="has_group")
 def has_group(user, group_name):
     """
     Usage in the template:
         {% load group_tags %}
-        {% if user|has_group:"Volunteer" %}
+        {% if user|has_group:"Manager" %}
             ...
         {% endif %}
     """
