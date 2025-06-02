@@ -141,7 +141,7 @@
 
 <hr class="text-white">
 
-{% if user|has_group:"Volunteer" or user.is_superuser %}
+{% if user|has_group:"Manager" or user.is_superuser %}
   <a class="btn btn-outline-light btn-sm mb-3" href="{% url 'housing_app:listing_create' %}">
     Add New Listing
   </a>
@@ -194,7 +194,7 @@
           >
             View
           </a>
-          {% if user|has_group:"Volunteer" or user.is_superuser %}
+          {% if user|has_group:"Manager" or user.is_superuser %}
             <a
               href="{% url 'housing_app:listing_update' listing.pk %}"
               class="btn btn-outline-light btn-sm me-1"

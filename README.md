@@ -30,7 +30,7 @@ The application will be available at `http://127.0.0.1:8000/` by default.
 
 ## Importing Listings from an API
 
-Volunteers can import property listings from an external API endpoint. Visit
+Managers can import property listings from an external API endpoint. Visit
 `/scrape/api/` while the server is running and provide the API URL and optional
 API key. The response should be a JSON array of listing objects with fields like
 `street`, `city`, `state`, `zip`, `bedrooms`, `bathrooms`, `property_type`,
