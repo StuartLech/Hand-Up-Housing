@@ -1,13 +1,21 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 from django.db.models import Q
+import pyotp
 
 from .models import Listing, ActivityLog
-from .forms import ListingForm, ListingImageFormSet, ScrapeURLForm, ScrapeAPIForm
+from .forms import (
+    ListingForm,
+    ListingImageFormSet,
+    ScrapeURLForm,
+    ScrapeAPIForm,
+    TwoFactorCodeForm,
+)
 from .scraper import scrape_urls, scrape_api
 
 
@@ -66,6 +74,56 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, "registration/register.html", {"form": form})
+
+
+class TwoFactorLoginView(LoginView):
+    template_name = "registration/login.html"
+
+    def form_valid(self, form):
+        user = form.get_user()
+        profile = getattr(user, "userprofile", None)
+        if profile and profile.two_factor_secret:
+            self.request.session["pre_2fa_user_id"] = user.id
+            return redirect("two_factor_verify")
+        return super().form_valid(form)
+
+
+def two_factor_verify(request):
+    user_id = request.session.get("pre_2fa_user_id")
+    if not user_id:
+        return redirect("login")
+    user = User.objects.get(id=user_id)
+    profile = user.userprofile
+    if request.method == "POST":
+        form = TwoFactorCodeForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data["code"]
+            totp = pyotp.TOTP(profile.two_factor_secret)
+            if totp.verify(code):
+                login(request, user)
+                request.session.pop("pre_2fa_user_id", None)
+                return redirect("housing_app:listing_list")
+            else:
+                form.add_error("code", "Invalid code")
+    else:
+        form = TwoFactorCodeForm()
+    return render(request, "registration/two_factor_verify.html", {"form": form})
+
+
+@login_required
+def enable_two_factor(request):
+    profile = request.user.userprofile
+    if not profile.two_factor_secret:
+        profile.two_factor_secret = pyotp.random_base32()
+        profile.save()
+    totp_uri = pyotp.totp.TOTP(profile.two_factor_secret).provisioning_uri(
+        request.user.username, issuer_name="HUH Connect"
+    )
+    return render(
+        request,
+        "housing_app/enable_two_factor.html",
+        {"secret": profile.two_factor_secret, "uri": totp_uri},
+    )
 
 
 @login_required

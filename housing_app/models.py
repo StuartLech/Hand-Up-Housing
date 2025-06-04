@@ -97,6 +97,11 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
+    two_factor_secret = models.CharField(max_length=16, blank=True, null=True)
+
+    @property
+    def two_factor_enabled(self):
+        return bool(self.two_factor_secret)
 
     def __str__(self):
         return self.user.username
