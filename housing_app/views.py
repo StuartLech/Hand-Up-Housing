@@ -8,7 +8,7 @@ from django import forms
 from django.db.models import Q
 import pyotp
 
-from .models import Listing, ActivityLog
+from .models import Listing, ActivityLog, UserProfile
 from .forms import (
     ListingForm,
     ListingImageFormSet,
@@ -93,7 +93,9 @@ def two_factor_verify(request):
     if not user_id:
         return redirect("login")
     user = User.objects.get(id=user_id)
-    profile = user.userprofile
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    if not profile.two_factor_secret:
+        return redirect("login")
     if request.method == "POST":
         form = TwoFactorCodeForm(request.POST)
         if form.is_valid():
@@ -112,7 +114,7 @@ def two_factor_verify(request):
 
 @login_required
 def enable_two_factor(request):
-    profile = request.user.userprofile
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
     if not profile.two_factor_secret:
         profile.two_factor_secret = pyotp.random_base32()
         profile.save()
