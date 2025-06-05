@@ -206,7 +206,7 @@
             <form
               method="POST"
               action="{% url 'housing_app:listing_delete' listing.pk %}"
-              class="d-inline-block"
+              class="d-inline-block delete-form"
             >
               {% csrf_token %}
               <button
