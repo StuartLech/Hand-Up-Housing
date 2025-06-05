@@ -9,6 +9,9 @@
           <p>Scan this code or enter the secret in your authenticator app.</p>
           <pre class="text-center">{{ secret }}</pre>
           <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ uri }}" alt="QR Code" class="d-block mx-auto"/>
+          <div class="text-center mt-3">
+            <a href="{% url 'housing_app:listing_list' %}" class="btn btn-outline-light btn-sm">Back</a>
+          </div>
         </div>
       </div>
     </div>
