@@ -113,16 +113,35 @@ def two_factor_verify(request):
 @login_required
 def enable_two_factor(request):
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
-    if not profile.two_factor_secret:
-        profile.two_factor_secret = pyotp.random_base32()
-        profile.save()
-    totp_uri = pyotp.totp.TOTP(profile.two_factor_secret).provisioning_uri(
+
+    if request.method == "POST":
+        secret = request.session.get("temp_2fa_secret")
+        if not secret:
+            return redirect("enable_two_factor")
+        form = TwoFactorCodeForm(request.POST)
+        if form.is_valid():
+            totp = pyotp.TOTP(secret)
+            if totp.verify(form.cleaned_data["code"]):
+                profile.two_factor_secret = secret
+                profile.save()
+                request.session.pop("temp_2fa_secret", None)
+                return redirect("housing_app:listing_list")
+            else:
+                form.add_error("code", "Invalid code")
+    else:
+        secret = request.session.get("temp_2fa_secret")
+        if not secret:
+            secret = pyotp.random_base32()
+            request.session["temp_2fa_secret"] = secret
+        form = TwoFactorCodeForm()
+
+    totp_uri = pyotp.totp.TOTP(secret).provisioning_uri(
         request.user.username, issuer_name="HUH Connect"
     )
     return render(
         request,
         "housing_app/enable_two_factor.html",
-        {"secret": profile.two_factor_secret, "uri": totp_uri},
+        {"secret": secret, "uri": totp_uri, "form": form},
     )
 
 
