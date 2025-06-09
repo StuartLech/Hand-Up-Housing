@@ -39,7 +39,6 @@ body {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
-
 /* Individual card styling for forms and details */
 .property-card {
   background: rgba(0, 0, 0, 0.7);
@@ -108,7 +107,7 @@ body.light-mode .navbar-dark .navbar-brand {
 }
 body.light-mode .page-card {
   background: rgba(255, 255, 255, 0.95);
-  color: #000;
+color: #000;
   border: 1px solid #dee2e6;
 }
 body.light-mode .property-card {
@@ -118,6 +117,7 @@ body.light-mode .property-card {
 }
 body.light-mode .property-card:hover {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
 }
 body.light-mode .form-control,
 body.light-mode .form-select {
