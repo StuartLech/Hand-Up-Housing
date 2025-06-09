@@ -1,0 +1,42 @@
+{% extends 'housing_app/base.html' %}
+{% load group_tags %}
+{% block content %}
+<h2 class="mb-4">My Saved Properties</h2>
+{% if listings %}
+  <table class="table table-dark table-bordered">
+    <thead>
+      <tr>
+        <th>Street</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Zip</th>
+        <th>Type</th>
+        <th>Bedrooms</th>
+        <th>Bathrooms</th>
+        <th>Pets?</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for listing in listings %}
+      <tr>
+        <td>{{ listing.street }}</td>
+        <td>{{ listing.city }}</td>
+        <td>{{ listing.state }}</td>
+        <td>{{ listing.zip }}</td>
+        <td>{{ listing.property_type }}</td>
+        <td>{{ listing.bedrooms }}</td>
+        <td>{{ listing.bathrooms }}</td>
+        <td>{% if listing.pets_allowed %}Yes{% else %}No{% endif %}</td>
+        <td>
+          <a href="{% url 'housing_app:listing_detail' listing.pk %}" class="btn btn-outline-light btn-sm me-1">View</a>
+          <a href="{% url 'housing_app:toggle_favorite' listing.pk %}" class="btn btn-outline-light btn-sm">Remove</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No saved listings.</p>
+{% endif %}
+{% endblock %}

@@ -119,6 +119,22 @@ class ActivityLog(models.Model):
         return f"{self.user.username}: {self.action}"
 
 
+class Favorite(models.Model):
+    """A saved listing for a user"""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="favorites"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "listing")
+
+    def __str__(self):
+        return f"{self.user.username} -> {self.listing_id}"
+
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
