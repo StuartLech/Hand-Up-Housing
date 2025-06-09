@@ -43,6 +43,11 @@
               </a>
             </li>
             <li class="nav-item me-2">
+              <a class="btn btn-outline-light btn-sm" href="{% url 'housing_app:favorite_list' %}">
+                Favorites
+              </a>
+            </li>
+            <li class="nav-item me-2">
               <form method="POST" action="{% url 'logout' %}" class="d-inline">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-outline-light btn-sm">

@@ -108,6 +108,9 @@
             <p>No images.</p>
           {% endif %}
 
+          <a href="{% url 'housing_app:toggle_favorite' listing.pk %}" class="btn btn-outline-light btn-sm me-2">
+            {% if is_favorite %}Unsave{% else %}Save{% endif %}
+          </a>
           <a href="{% url 'housing_app:listing_list' %}" class="btn btn-outline-light btn-sm">
             Back to List
           </a>
