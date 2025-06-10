@@ -153,6 +153,7 @@ body.light-mode .text-white {
   color: #000 !important;
 }
 
+/* Table hover effects */
 table.table-dark tbody tr {
   transition: transform 0.3s ease;
 }
@@ -197,4 +198,3 @@ body.light-mode .table-dark tbody tr:hover {
     opacity: 0;
   }
 }
-
