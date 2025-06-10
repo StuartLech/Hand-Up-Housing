@@ -7,11 +7,12 @@ from django.contrib.auth.models import User
 from django import forms
 from django.db import models
 from django.db.models import Q
+from django.urls import reverse
 import pyotp
 import csv
 from django.http import HttpResponse
 
-from .models import Listing, ActivityLog, UserProfile
+from .models import Listing, ActivityLog, UserProfile, Favorite
 from .forms import (
     ListingForm,
     ListingImageFormSet,
@@ -225,7 +226,16 @@ def listing_list(request):
 @user_passes_test(is_approved)
 def listing_detail(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
-    return render(request, "housing_app/listing_detail.html", {"listing": listing})
+    is_favorite = False
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(
+            user=request.user, listing=listing
+        ).exists()
+    return render(
+        request,
+        "housing_app/listing_detail.html",
+        {"listing": listing, "is_favorite": is_favorite},
+    )
 
 
 @login_required
@@ -284,6 +294,25 @@ def listing_delete(request, pk):
         listing.delete()
         return redirect("housing_app:listing_list")
     return render(request, "housing_app/listing_detail.html", {"listing": listing})
+
+
+@login_required
+def toggle_favorite(request, pk):
+    listing = get_object_or_404(Listing, pk=pk)
+    fav, created = Favorite.objects.get_or_create(user=request.user, listing=listing)
+    if not created:
+        fav.delete()
+    return redirect(
+        request.META.get(
+            "HTTP_REFERER", reverse("housing_app:listing_detail", args=[pk])
+        )
+    )
+
+
+@login_required
+def favorite_list(request):
+    listings = Listing.objects.filter(favorites__user=request.user)
+    return render(request, "housing_app/favorite_list.html", {"listings": listings})
 
 
 @login_required
