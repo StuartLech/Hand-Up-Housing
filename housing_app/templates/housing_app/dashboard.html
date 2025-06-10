@@ -1,0 +1,24 @@
+{% extends 'housing_app/base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+<p>Total Listings: {{ total }}</p>
+<p>Available Listings: {{ available }}</p>
+
+<table class="table table-dark table-bordered mt-3">
+  <thead>
+    <tr>
+      <th>Property Type</th>
+      <th>Count</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in type_counts %}
+    <tr>
+      <td>{{ row.property_type }}</td>
+      <td>{{ row.count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

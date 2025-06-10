@@ -5,9 +5,12 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
+from django.db import models
 from django.db.models import Q
 from django.urls import reverse
 import pyotp
+import csv
+from django.http import HttpResponse
 
 from .models import Listing, ActivityLog, UserProfile, Favorite
 from .forms import (
@@ -357,5 +360,88 @@ def scrape_api_view(request):
         {
             "form": form,
             "results": results,
+        },
+    )
+
+
+@login_required
+@user_passes_test(is_approved)
+def export_listings_csv(request):
+    """Export all listings as a CSV file."""
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = "attachment; filename=listings.csv"
+
+    writer = csv.writer(response)
+    writer.writerow(
+        [
+            "Street",
+            "City",
+            "State",
+            "Zip",
+            "Bedrooms",
+            "Bathrooms",
+            "Property Type",
+            "Available",
+        ]
+    )
+    for l in Listing.objects.all():
+        writer.writerow(
+            [
+                l.street,
+                l.city,
+                l.state,
+                l.zip,
+                l.bedrooms,
+                l.bathrooms,
+                l.property_type,
+                "Yes" if l.is_available else "No",
+            ]
+        )
+
+    return response
+
+
+@login_required
+@user_passes_test(is_approved)
+def export_listings_pdf(request):
+    """Export all listings as a simple PDF document."""
+    from reportlab.lib.pagesizes import letter
+    from reportlab.pdfgen import canvas
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = "attachment; filename=listings.pdf"
+
+    p = canvas.Canvas(response, pagesize=letter)
+    y = 750
+    for l in Listing.objects.all():
+        line = f"{l.street or ''} {l.city or ''}, {l.state or ''} {l.zip or ''} - {l.bedrooms} BR/{l.bathrooms} BA"
+        p.drawString(30, y, line)
+        y -= 20
+        if y < 50:
+            p.showPage()
+            y = 750
+    p.showPage()
+    p.save()
+    return response
+
+
+@login_required
+@user_passes_test(is_approved)
+def dashboard(request):
+    """Display simple analytics about listings."""
+    total = Listing.objects.count()
+    available = Listing.objects.filter(is_available=True).count()
+    type_counts = (
+        Listing.objects.values("property_type")
+        .order_by("property_type")
+        .annotate(count=models.Count("id"))
+    )
+    return render(
+        request,
+        "housing_app/dashboard.html",
+        {
+            "total": total,
+            "available": available,
+            "type_counts": type_counts,
         },
     )
