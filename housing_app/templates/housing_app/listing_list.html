@@ -151,6 +151,8 @@
   <a class="btn btn-outline-light btn-sm mb-3 ms-2" href="{% url 'housing_app:scrape_api' %}">
     Import from API
   </a>
+{% endif %}
+{% if user|has_group:"Manager" or user|has_group:"Client Services" or user.is_superuser %}
   <a class="btn btn-outline-light btn-sm mb-3 ms-2" href="{% url 'housing_app:dashboard' %}">
     Dashboard
   </a>
