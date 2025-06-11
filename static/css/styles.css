@@ -68,6 +68,11 @@ body {
   color: #ccc;
 }
 
+/* Keep filter inputs from stretching too wide */
+.filter-field {
+  max-width: 15rem;
+}
+
 /* Primary button styling */
 .btn-primary {
   background-color: #007bff;
