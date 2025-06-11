@@ -198,3 +198,8 @@ body.light-mode .table-dark tbody tr:hover {
     opacity: 0;
   }
 }
+
+/* Narrow width for filter controls */
+.filter-field {
+  max-width: 150px;
+}
