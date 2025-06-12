@@ -35,3 +35,6 @@ This project is a Django application for managing housing resources. The reposit
 - When adding images or static files, place them under `static/` with meaningful names.
 - Additional folder-specific guidelines are provided in nested `AGENTS.md` files.
 - Avoid committing changes to `db.sqlite3` unless specifically required for sample data.
+- When adding a new view and template that users reach via a redirect, include
+  a "Back" link or button in that template so users can easily return to the
+  previous page (typically the listing list).
